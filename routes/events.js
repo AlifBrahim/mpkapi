@@ -1,3 +1,6 @@
+import pool from "express";
+import router from "./index";
+
 router.post('/signup', async (req, res) => {
   const { userID, password } = req.body;
 
