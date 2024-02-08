@@ -1,74 +1,29 @@
-var express = require('express');
-var router = express.Router();
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
+router.post('/signup', async (req, res) => {
+  const { userID, password } = req.body;
 
-const pool = mysql.createPool({
-  host: 'uumevents-do-user-14295301-0.b.db.ondigitalocean.com',
-  port: '25060',
-  user: 'doadmin',
-  password: 'AVNS_7KPMC3xu3yCp_jz_WfT',
-  database: 'defaultdb'
-});
+  if (!userID || !password) {
+    return res.status(400).json({ error: 'UserID and password are required' });
+  }
 
-router.use(bodyParser.json());
-
-// router.get('/', function(req, res) {
-//   res.send('Hello, World!');
-// });
-
-
-router.get('/', async (req, res) => {
   try {
-    const events = await getEventsFromDatabase();
-    res.json(events);
+    const query = 'INSERT INTO users (userID, password) VALUES (?, ?)';
+    const result = await executeQuery(query, [userID, password]);
+
+    res.status(201).json({ message: 'User created successfully', userID });
   } catch (error) {
-    console.error('Error retrieving events:', error);
+    console.error('Error creating user:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-router.get('/names', async (req, res) => {
-  try {
-    const events = await getEventNamesFromDatabase();
-    res.json(events);
-  } catch (error) {
-    console.error('Error retrieving events:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-function getEventsFromDatabase() {
+function executeQuery(query, params) {
   return new Promise((resolve, reject) => {
-    console.log('Attempting to retrieve events from the database...');
-
-    pool.query('SELECT * FROM defaultdb.events', (error, results, fields) => {
+    pool.query(query, params, (error, results) => {
       if (error) {
-        console.error('Error querying the database:', error);
         reject(error);
       } else {
-        console.log('Successfully retrieved events from the database.');
-        console.log('Query results:', results);
         resolve(results);
       }
     });
   });
 }
-function getEventNamesFromDatabase() {
-  return new Promise((resolve, reject) => {
-    console.log('Attempting to retrieve events from the database...');
-
-    pool.query('SELECT name FROM defaultdb.events', (error, results, fields) => {
-      if (error) {
-        console.error('Error querying the database:', error);
-        reject(error);
-      } else {
-        console.log('Successfully retrieved event names from the database.');
-        console.log('Query results:', results);
-        resolve(results);
-      }
-    });
-  });
-}
-
-module.exports = router;
