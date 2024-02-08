@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/events', eventsRouter);
+app.use('/events', eventsRouter); // error: Argument types do not match parameters
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

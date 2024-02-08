@@ -14,6 +14,9 @@ const pool = mysql.createPool({
 
 router.use(bodyParser.json());
 
+router.get('/', function(req, res) {
+  res.send('Hello, World!');
+});
 router.post('/signup', async (req, res) => {
   const { userID, password } = req.body;
 
@@ -43,3 +46,4 @@ function executeQuery(query, params) {
     });
   });
 }
+module.exports = router;
