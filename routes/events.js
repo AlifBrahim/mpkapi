@@ -46,4 +46,23 @@ function executeQuery(query, params) {
     });
   });
 }
+
+router.get('/users/:userID', async (req, res) => {
+  const { userID } = req.params;
+
+  try {
+    const query = 'SELECT * FROM users WHERE userID = ?';
+    const results = await executeQuery(query, [userID]);
+
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error retrieving user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;
